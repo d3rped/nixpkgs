@@ -700,11 +700,21 @@ in
             ln -sf ${masterCfFile} /var/lib/postfix/conf/master.cf
 
             ${concatStringsSep "\n" (mapAttrsToList (to: from: ''
-              ln -sf ${from} /var/lib/postfix/conf/${to}
+              if [ -O ${from} ]
+              then
+                ln -sf ${from} /var/lib/postfix/conf/${to}
+              else
+                cp ${from} /var/lib/postfix/conf/${to}
+              fi
               ${pkgs.postfix}/bin/postalias /var/lib/postfix/conf/${to}
             '') cfg.aliasFiles)}
             ${concatStringsSep "\n" (mapAttrsToList (to: from: ''
-              ln -sf ${from} /var/lib/postfix/conf/${to}
+              if [ -O ${from} ]
+              then
+                ln -sf ${from} /var/lib/postfix/conf/${to}
+              else
+                cp ${from} /var/lib/postfix/conf/${to}
+              fi
               ${pkgs.postfix}/bin/postmap /var/lib/postfix/conf/${to}
             '') cfg.mapFiles)}
 
